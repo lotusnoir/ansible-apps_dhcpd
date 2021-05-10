@@ -1,0 +1,23 @@
+{{ ansible_managed | comment }}
+
+default-lease-time {{ dhcpd_default_lease_time }};
+max-lease-time {{ dhcpd_max_lease_time }};
+ddns-update-style none;
+
+option domain-name-servers {{ dhcpd_domain_name_servers }};
+option domain-name "{{ dhcpd_domain_name }}";
+authoritative;
+log-facility {{ dhcpd_log_facility }};
+
+{% for item in dhcpd_subnets %}
+shared-network {{ item.name }} {
+  subnet {{ item.network | ipaddr('network') }} netmask {{ item.network | ipaddr('netmask') }} {
+{% if item.range_start is defined and item.range_end is defined %}
+      range                     {{ item.network.split('.')[0:3] | join('.') }}.{{ item.range_start }} {{ item.network.split('.')[0:3] | join('.') }}.{{ item.range_end }};
+      option routers            {{ item.network.split('.')[0:3] | join('.') }}.{{ item.routers }};
+      option broadcast-address  {{ item.network | ipaddr('broadcast') }};
+      option subnet-mask        {{ item.network | ipaddr('netmask') }};
+  }
+{% endif %}
+}
+{% endfor %}
