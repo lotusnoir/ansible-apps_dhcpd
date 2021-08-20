@@ -1,33 +1,8 @@
 ---
-- name: "Check for dhcpd executable file"
-  stat:
-    path: '/usr/sbin/dhcpd'
-  changed_when: false
-  register: dhcpd_binary
+### Checks
+- name: Import check tasks
+  import_tasks: check.yml
 
-- when: not dhcpd_binary.stat.exists
-  block:
-    - name: "Install isc-dhcp-server and requierements"
-      package:
-        name: ["isc-dhcp-server", "procps", "dhcpd-pools"]
-        state: present
-
-- name: "Configure defaults"
-  template:
-    src: "isc-dhcp-server.j2"
-    dest: "/etc/default/isc-dhcp-server"
-    mode: "0640"
-  notify: restart dhcpd
-
-- name: "Configure config file"
-  template:
-    src: dhcpd.conf.j2
-    dest: "/etc/dhcp/dhcpd.conf"
-    mode: "0640"
-  notify: restart dhcpd
-
-- name: "Start and enable dhcpd"
-  service:
-    name: "isc-dhcp-server"
-    state: started
-    enabled: yes
+### Install
+- name: Import install tasks
+  import_tasks: install.yml
