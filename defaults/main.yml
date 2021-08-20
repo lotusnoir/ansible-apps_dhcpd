@@ -10,8 +10,9 @@ dhcpd_domain_name: example.net
 dhcpd_authoritative: true
 dhcpd_log_facility: "local7"
 dhcpd_subnets:
-  - network: 10.64.33.0/24
+  - name: test
+    network: 10.64.33.0/24
     range_start: 10.64.33.10
     range_end: 10.64.33.100
     routers: 10.64.33.254
-#  - {network: 10.64.33.0, range_start: 10.64.33.10, range_end: 10.64.33.100, routers: 10.64.33.254}
+#  - {name: test, network: 10.64.33.0, range_start: 10.64.33.10, range_end: 10.64.33.100, routers: 10.64.33.254}
