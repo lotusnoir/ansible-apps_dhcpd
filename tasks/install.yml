@@ -1,33 +1,39 @@
 ---
 - name: "Check for dhcpd executable file"
-  stat:
+  ansible.builtin.stat:
     path: '/usr/sbin/dhcpd'
   changed_when: false
   register: dhcpd_binary
 
-- when: not dhcpd_binary.stat.exists
+- name: "Install tasks"
+  when: not dhcpd_binary.stat.exists
   block:
+    - name: "Install requirement for ansible template"
+      ansible.builtin.package:
+        name: ["python-netaddr"]
+        state: present
+
     - name: "Install isc-dhcp-server and requierements"
-      package:
+      ansible.builtin.package:
         name: ["isc-dhcp-server", "procps", "dhcpd-pools"]
         state: present
 
 - name: "Configure defaults"
-  template:
+  ansible.builtin.template:
     src: "isc-dhcp-server.j2"
     dest: "/etc/default/isc-dhcp-server"
     mode: "0640"
   notify: restart dhcpd
 
 - name: "Configure config file"
-  template:
+  ansible.builtin.template:
     src: dhcpd.conf.j2
     dest: "/etc/dhcp/dhcpd.conf"
     mode: "0640"
   notify: restart dhcpd
 
 - name: "Start and enable dhcpd"
-  service:
+  ansible.builtin.service:
     name: "isc-dhcp-server"
     state: started
     enabled: true
