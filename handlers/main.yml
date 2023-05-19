@@ -1,5 +1,5 @@
 ---
 - name: restart dhcpd
-  service:
+  ansible.builtin.service:
     name: "isc-dhcp-server"
     state: restarted
